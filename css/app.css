@@ -19,3 +19,7 @@
 .my-article{
 	padding: 20px;
 }
+
+.my-input{
+	width: inherit;
+}

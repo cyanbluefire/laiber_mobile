@@ -29,13 +29,63 @@
 		  <nav data-am-widget="menu" class="am-menu  am-menu-offcanvas1" data-am-menu-offcanvas>
 			  <a href="javascript: void(0)" class="am-menu-toggle">
 			  </a>
-			  
-			  
-			</nav>
+		  </nav>
 		</header>
-		<div style="position: relative;text-align: center; padding: 30px;">
-			<input style="width: auto;height: 100px;" />
+		
+		<!--<article class="am-article my-article">
+		    <div class="am-form-group">
+		      <label for="article_title">标题：</label>
+		      <input type="text" id="article_title" required/>
+			</div>
+		  
+		
+		  <div class="am-article-bd">
+		  	<div class="am-form-group">
+		      <label for="article_title">正文:</label>
+			<input name="article_body" id="article_body" placeholder="请输入正文..." style="height: 100px;width: auto;"/>
+		  	</div>
+		  </div>
+		</article>	-->
+		
+		<div  >
+			<article class="my-article">
+			  	<h1 class="">标题:</h1>
+			    <input name="title" id="title"></input>
+			  	<h1 class="">正文:</h1>
+				<div class="am-form-group">
+			      <textarea class="" rows="5" id="content"></textarea>
+			    </div>
+			</article>
 		</div>
-		<button class="am-btn-block mybtn" onclick="feedback()">提交</button>
+		
+		<button class="am-btn-block mybtn" onclick="release()">提交</button>
+		<script type="text/javascript">
+//		URL="http://laiber.ml/mobile_app/";
+		URL="http://192.168.31.187:3000/mobile_app/";
+		
+		function release(){
+			var title =$('#title')[0].value;
+			var content=$('#content')[0].value;
+			var _id=window.localStorage.getItem('_id');
+			console.log('_id'+_id+'/n title'+title+'/ncontent'+content);
+			$.ajax({
+				type:"post",
+				url:URL+"posts/new",
+				async:true,
+				data:{"post[title]":title,"post[content]":content,"user[_id]":_id},
+				dataType:"json",
+				success:function(data){
+					if(typeof(data)=="1")
+						alert('发布成功！');
+					if(typeof(data)=="0")
+						alert('发布失败!');
+				},
+				error:function(data){
+					console.log('data::'+data);
+				}
+			});
+		}
+
+		</script>
 	</body>
 </html>

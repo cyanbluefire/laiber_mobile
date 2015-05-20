@@ -47,14 +47,15 @@
 		</div>
 		
 	<script type="text/javascript">
-		window.localhost="localhost:3000";
+		window.localhost="localhost:3000";		
+		var local_userid = "_id";
 		function login(){
 			var username=$("#username")[0].value;
 				
 			var password = hex_md5($('#password')[0].value);
 			$.ajax({
 				type:"post",
-				url:"http://laiber.ml/mobile_new_session/create",
+				url:"http://192.168.31.187:3000/mobile_new_session/create",
 				async:true,
 				data:{"user[name]":username,"user[password]":password},
 				dataType:'json',
@@ -65,8 +66,20 @@
 					if(data=="0")
 						alert("密码错误！");
 					if(typeof(data)=="object"){
-						alert("登录成功！");
-						setTimeout(function(){window.location="home.html";},1000);
+						var _id;
+//						$.each(data, function(i,item) {
+//							_id=item._id;
+//						});
+//						var data_str = $.parseJSON(data);
+//						console.log('data_str::'+data_str);
+						_id=JSON.stringify(data._id);
+						if(window.localStorage ){
+							window.localStorage.setItem(local_userid,_id);
+							alert("登录成功！");
+							setTimeout(function(){window.location="home.html";},1000);
+						}else{
+							console.log("can't localStorage");
+						}
 					}
 				},
 				error:function(data){
