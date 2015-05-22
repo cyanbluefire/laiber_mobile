@@ -143,18 +143,20 @@
 <script src="js/jquery-2.1.3.min.js"></script>
 <script src="js/handlebars.min.js"></script>
 <script type="text/x-handlebars-template" id="tpi-list-item">
-  {{#each this}}
-  <li class="am-list-item-desced" data-id="{{id}}">
-    <a href="{{alt}}" class="am-list-item-hd" target="_blank">{{title}}</a>
-
-    <div class="am-list-item-text">{{content}}</div>
+  {{#each posts}}
+  <li class="am-list-item-desced" data-id="{{_id}}">
+    <a href="#" class="am-list-item-hd" target="_blank">{{post.title}}</a>
+    <p>{{user}}</p>
+    <div class="am-list-item-text">{{post.content}}</div>
   </li>
   {{/each}}
 </script>
 <script src="js/amazeui.min.js"></script>
 <script>
+	var fresh_count = 5;
   (function($) {
     var EventsList = function(element, options) {
+    	console.log('new Eventslist');
       var $main = $('#wrapper');
       var $list = $main.find('#events-list');
       var $pullDown = $main.find('#pull-down');
@@ -166,66 +168,31 @@
       this.prev = this.next = this.start = options.params.start;
       this.total = null;
 
-//    this.getURL = function(params) {
-////      var queries = ['callback=?'];
-////      for (var key in  params) {
-////        if (key !== 'start') {
-////          queries.push(key + '=' + params[key]);
-////        }
-////      }
-////      queries.push('start=');
-////      return options.api + '?' + queries.join('&');
-//		
-//    };
-
-      this.renderList = function(start, type) {
-        var _this = this;
+      
+      this.fresh = function fresh(fresh_type,_id,pull_up){
+      	console.log('fresh function()');
+		var DATA;
+		var _this = this;
         var $el = $pullDown;
 
-        if (type === 'load') {
+        if (fresh_type === 'load') {
           $el = $pullUp;
         }
-//		getResponse 处理数据并编译成模板
-
-        $.getJSON(this.URL + start).then(function(data) {
-          console.log(data);
-          console.log(JSON.stringify(data));
-          _this.total = data.total;
-          var html = _this.compiler(data.events);			//
-//        console.log(html);
-          if (type === 'refresh') {
-            $list.children('li').first().before(html);
-          } else if (type === 'load') {
-            $list.append(html);
-          } else {
-            $list.html(html);
-          }
-
-          // refresh iScroll
-          setTimeout(function() {
-            _this.iScroll.refresh();
-          }, 100);
-        }, function() {
-          console.log('Error...')
-        }).always(function() {
-          _this.resetLoading($el);
-          if (type !== 'load') {
-            _this.iScroll.scrollTo(0, topOffset, 800, $.AMUI.iScroll.utils.circular);
-          }
-        });
-      };
-      
-      function fresh(fresh_type,last_id){
-		var DATA;
+        
+        //pull_up值为true是下拉刷新，false是直接刷新
       	switch (fresh_type){
-      		case 0:
-      			DATA={"posts[num]":3};
+      		case 'refresh':
+      			if(!pull_up){
+      				console.log('type==refresh');
+      				DATA={"posts[num]":fresh_count};
+      			}
+      			if(pull_up){
+      				console.log('pull up');
+      				DATA={"posts[num]":fresh_count,"posts_for_top[_id]":_id};
+      			}
       			break;
-      		case 1:
-      			DATA={"posts[num]":3,"posts_for_top[_id]":last_id};
-      			break;
-      		case 2:
-      			DATA={"posts[num]":3,"posts_for_bottom[_id]":last_id};
+      		case 'load':
+      			DATA={"posts[num]":fresh_count,"posts_for_bottom[_id]":_id};
       			break;
       		default:
       			break;
@@ -236,19 +203,38 @@
       	async:true,
       	data:DATA,
       	dataType:"json",
-      	success:function(fresh_type,data){
-      		switch (fresh_type){
-      			
-      		}
+      	success:function(data){
+          console.log(JSON.stringify(data));
+          var html = _this.compiler(data);			
+          if (fresh_type === 'refresh') {
+            $list.children('li').first().before(html);
+            localStorage.setItem('posts_for_top[_id]',JSON.stringify(data[0].post._id));
+            if(!pull_up){
+            	localStorage.setItem('posts_for_bottom[_id]',JSON.stringify(data[4].post._id));
+            }
+          } else if (fresh_type === 'load') {
+            $list.append(html);
+            localStorage.setItem('posts_for_bottom[_id]',JSON.stringify(data[4].post._id));
+          } else {
+            $list.html(html);
+          }
+
+          // refresh iScroll
+          setTimeout(function() {
+            _this.iScroll.refresh();
+          }, 100);
       	},
       	error:function(data){
       		console.log("errorData:"+data);
       	},
-      	complete:function(data){
-      		
+      	complete:function(){
+      		_this.resetLoading($el);
+          if (fresh_type !== 'load') {
+            _this.iScroll.scrollTo(0, topOffset, 800, $.AMUI.iScroll.utils.circular);
+          }
       	}
-      }).always();
-      }
+      });
+      };
       
 
       this.setLoading = function($el) {
@@ -261,14 +247,14 @@
 
 		// 
       this.init = function() {
+      	console.log('init');
         var myScroll = this.iScroll = new $.AMUI.iScroll('#wrapper', {});
         // myScroll.scrollTo(0, topOffset);
         var _this = this;
         var pullFormTop = false;
         var pullStart;
 
-        this.URL = options.URL;
-        this.renderList(options.params.start);
+        this.fresh('refresh',0,false);
 
         myScroll.on('scrollStart', function() {
           if (this.y >= topOffset) {
@@ -294,35 +280,26 @@
 
       this.handlePullDown = function() {
         console.log('handle pull down');
-        if (this.prev > 0) {
-          this.setLoading($pullDown);
-          this.prev -= options.params.count;
-          this.renderList(this.prev, 'refresh');
-        } else {
-          console.log('别刷了，没有了');
-        }
+        this.setLoading($pullDown);
+        var _id = localStorage.getItem('posts_for_top[_id]');
+        this.fresh('refresh',_id,false);
       };
 
       this.handlePullUp = function() {
         console.log('handle pull up');
-        if (this.next < this.total) {
-          this.setLoading($pullUp);
-          this.next += options.params.count;
-          this.renderList(this.next, 'load');
-        } else {
-          console.log(this.next);
-          // this.iScroll.scrollTo(0, topOffset);
-        }
+		this.setLoading($pullUp);
+		var _id = localStorage.getItem('posts_for_bottom[_id]')
+        this.fresh('load',_id,true);
       }
     };
 
 //	here start
     $(function() {
+    	console.log('start');
       var app = new EventsList(null, {
         URL:'http://192.168.31.187:3000/mobile_app/posts/get',
         params: {
-          start: 100,
-          posts[num]:3,
+          start: 100
         }
       });
       app.init();
