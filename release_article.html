@@ -76,7 +76,8 @@
 				dataType:"json",
 				success:function(data){
 					if(data=="1")
-						alert('发布成功！');	
+						alert('发布成功！');
+						setTimeout(function(){window.location = 'home.html';},1000);
 					if(data=="0")
 						alert('发布失败!');
 				},
