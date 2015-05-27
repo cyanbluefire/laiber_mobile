@@ -98,8 +98,9 @@
 								<a href="my_project.html" class="">我的项目</a>
 
 							</li>
+
 							<li class="">
-								<a href="my_collection.html" class="">我的收藏</a>
+								<a href="message.html" class="">消息</a>
 
 							</li>
 							<li class="">
@@ -107,7 +108,7 @@
 
 							</li>
 							<li class="">
-								<a href="setting.html" class="">设置</a>
+								<a href="#" class="" onclick="logout()">退出账号</a>
 							</li>
 						</ul>
 					</div>
@@ -144,19 +145,27 @@
 <script src="js/handlebars.min.js"></script>
 <script type="text/x-handlebars-template" id="tpi-list-item">
   {{#each posts}}
-  <li class="am-list-item-desced" data-id="{{_id}}">
-    <a href="#" class="am-list-item-hd" target="_blank">{{post.title}}</a>
-    <p>{{user.name}}</p>
-    <div class="am-list-item-text">{{post.content}}</div>
+  <li class="am-list-item-desced" onclick="showDetails(this)" value={{post._id}}>
+    <a href="#" class="am-list-item-hd" target="_blank" id="title">{{post.title}}</a>
+    <p id="name">{{user.name}}</p>
+    <div class="am-list-item-text" id="content">{{post.content}}</div>
   </li>
   {{/each}}
 </script>
 <script src="js/amazeui.min.js"></script>
-<script>
+<script type="text/javascript">
+	
+//	$(function(){
+//		
+//		$('li').click(function(e){
+//			alert();
+//			$(this).css("color","red");
+//		});
+//	})
 	var fresh_count = 5;
-  (function($) {
-    var EventsList = function(element, options) {
-    	console.log('new Eventslist');
+  (function($) { 	
+    var EventsList = function(element, options) {	
+//  	console.log('new Eventslist');
       var $main = $('#wrapper');
       var $list = $main.find('#events-list');
       var $pullDown = $main.find('#pull-down');
@@ -170,7 +179,7 @@
 
       
       this.fresh = function fresh(fresh_type,_id,pull_up){
-      	console.log('fresh function()');
+//    	console.log('fresh function()');
 		var DATA;
 		var _this = this;
         var $el = $pullDown;
@@ -183,7 +192,7 @@
       	switch (fresh_type){
       		case 'refresh':
       			if(!pull_up){
-      				console.log('type==refresh');
+//    				console.log('type==refresh');
       				DATA={"posts[num]":fresh_count};
       			}
       			if(pull_up){
@@ -199,7 +208,7 @@
       	}
       	$.ajax({
       	type:"post",
-      	url:"http://192.168.31.187:3000/mobile_app/posts/get",
+      	url:"http://10.17.1.187:3000/mobile_app/posts/get",
       	async:true,
       	data:DATA,
       	dataType:"json",
@@ -225,7 +234,7 @@
           }, 100);
       	},
       	error:function(data){
-      		console.log("errorData:"+data);
+//    		console.log("errorData:"+data);
       	},
       	complete:function(){
       		_this.resetLoading($el);
@@ -256,7 +265,7 @@
 
 		// 
       this.init = function() {
-      	console.log('init');
+//    	console.log('init');
         var myScroll = this.iScroll = new $.AMUI.iScroll('#wrapper', {});
         // myScroll.scrollTo(0, topOffset);
         var _this = this;
@@ -304,9 +313,9 @@
 
 //	here start
     $(function() {
-    	console.log('start');
+//  	console.log('start');
       var app = new EventsList(null, {
-        URL:'http://192.168.31.187:3000/mobile_app/posts/get',
+        URL:'http://10.17.1.187:3000/mobile_app/posts/get',
         params: {
           start: 100
         }
@@ -318,6 +327,36 @@
       e.preventDefault();
     }, false);
   })(window.jQuery);
+  
+  	function logout(){
+		console.log('logout()');
+		var confirm_logout = confirm("确认退出登录?")
+		if(confirm_logout){
+			console.log('logout true');
+			window.location="login.html";
+			window.localStorage.removeItem('_id');
+		}else{
+			console.log('logout false');
+		}
+	}
+  	
+  	function showDetails(item){
+//		alert($(this).find("li").val());
+  		console.log('showDetails');
+		console.log($(item).children("#content").html());
+		console.log($(item).children("#title").html());
+		console.log($(item).children("#name").html());
+		console.log($(item).val());
+		
+		var dataFormLi = $.param({title:$(item).children("#title").html(),content:$(item).children("#content").html(),name:$(item).children("#name").html(),id:$(item).val()});
+//		console.log($.param(dataFormLi));
+//		var dataFormLi = [$(item).children("#title").html(),$(item).children("#name").html(),$(item).val(),$(item).children("#content").html()];
+		var d = JSON.stringify(dataFormLi);
+		window.location = "article_details.html?data="+d ;
+		console.log("article_details.html?"+dataFormLi)
+//		alert($(this).css("color","red"));
+  		//var dataFormLi = [$('#title')]
+  	}
 </script>
 </body>
 </html>

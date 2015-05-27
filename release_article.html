@@ -27,7 +27,7 @@
 				$(".sub_btn").click(function() {
 					var str = $("#content").val();
 					$("#show").html(replace_em(str));
-//					$("#content").html(replace_em(str));
+					//					$("#content").html(replace_em(str));
 				});
 			});
 			 //查看结果
@@ -97,7 +97,7 @@
 			<button class="am-btn-block mybtn" onclick="release()">提交</button>
 			<script type="text/javascript">
 				 //		URL="http://laiber.ml/mobile_app/";
-				URL = "http://192.168.31.187:3000/mobile_app/";
+				URL = "http://10.17.1.187:3000/mobile_app/";
 
 				function release() {
 					var title = $('#title')[0].value;
@@ -111,20 +111,21 @@
 						data: {
 							"post[title]": title,
 							"post[content]": content,
-							"user[_id]": _id
+//							"user[_id]": _id
 						},
 						dataType: "json",
 						success: function(data) {
-							if (data == "1")
+							if (data == "1") {
 								alert('发布成功！');
-							setTimeout(function() {
-								window.location = 'home.html';
-							}, 1000);
+								setTimeout(function() {
+									window.location = 'home.html';
+								}, 1000);
+							}
 							if (data == "0")
 								alert('发布失败!');
 						},
 						error: function(data) {
-							console.log('data::' + data);
+							console.log('data::' + JSON.stringify(data));
 						}
 					});
 				}
