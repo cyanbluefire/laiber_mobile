@@ -103,31 +103,31 @@
 					var _id = window.localStorage.getItem('_id');
 					var post_parent = getURLParameter('id');
 					console.log('_id::' + _id + ' content::' + content + ' post_parent::' + post_parent);
-//					$.ajax({
-//						type: "post",
-//						url: URL + "/mobile_app/posts/new",
-//						async: true,
-//						data: {
-//							"post[post_parent]": post_parent,
-//							"post[content]": content,
-//							"user[_id]": _id
-//						},
-//						dataType: "json",
-//						success: function(data) {
-//							if (data == "1") {
-//								alert('发布成功！');
-//								setTimeout(function() {
-//									window.location = 'article_details.html';
-//								}, 1000);
-//							}
-//							if (data == "0")
-//								alert('发布失败!');
-//						},
-//						error: function(data) {
-//							console.log('data::' + JSON.stringify(data));
-//							alert('服务器开小差了，请稍后重试');
-//						}
-//					});
+					$.ajax({
+						type: "post",
+						url: URL + "/mobile_app/posts/new",
+						async: true,
+						data: {
+							"post[post_parent]": post_parent,
+							"post[content]": content,
+							"user[_id]": _id
+						},
+						dataType: "json",
+						success: function(data) {
+							if (data == "1") {
+								alert('发布成功！');
+								setTimeout(function() {
+									window.location = 'article_details.html';
+								}, 1000);
+							}
+							if (data == "0")
+								alert('发布失败!');
+						},
+						error: function(data) {
+							console.log('data::' + JSON.stringify(data));
+							alert('服务器开小差了，请稍后重试');
+						}
+					});
 				}
 			</script>
 	</body>

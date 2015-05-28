@@ -88,13 +88,42 @@
 			</div>
 
 		</article>
-	
+	<script type="text/javascript" src="js/pull_refresh.js" ></script>
 	<script type="text/javascript">
 		$(function(){
 			$('#comment').click(function(){
 				window.location = "comment.html?id="+$('#details_id').html();
 			})
 		})
+		
+		 //初始化绑定iScroll控件 
+  document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+  document.addEventListener('DOMContentLoaded', loaded, false);
+  
+	function pullUpAction() {
+	   setTimeout(function () {  
+	    var el, li, i;
+	    el = document.getElementById('thelist');
+	    //==========================================
+	    $.ajax({
+	     type: "post",
+	     url: "LoadMore.ashx",
+	     data: { page: generatedCount },
+	     dataType: "json",
+	     success: function (data) {
+	      var json = data;
+	      $(json).each(function () {
+	       li = document.createElement('li');
+	       //  li.innerText = 'Generated row ' + (++generatedCount);
+	       li.innerHTML = '<img src="' + this.src + '"/>;     
+	       el.insertBefore(li, el.childNodes[0]);
+	      })
+	     }
+	    });
+	    //============================================
+	    refreshComment(); // 数据加载完成后，调用界面更新方法 Remember to refresh when contents are loaded (ie: on ajax completion)
+	   }, 1000); // <-- Simulate network congestion, remove setTimeout from production!
+	  }		
 	</script>
 	</body>
 

@@ -94,7 +94,7 @@
 							//						});
 							//						var data_str = $.parseJSON(data);
 							//						console.log('data_str::'+data_str);
-							_id = JSON.stringify(data.token);
+							_id = data.token;
 							if (window.localStorage) {
 								window.localStorage.setItem(local_userid, _id);
 								alert("登录成功！");
