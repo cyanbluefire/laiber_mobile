@@ -79,13 +79,14 @@
 			
 			var username;
 //			URL="http://laiber.ml/user_mobile/";
-			URL="http://10.17.1.187:3000/user_mobile/";
+//			URL="http://10.17.1.187:3000/user_mobile/";
+			URL = "http://laiber.wenjiangtao.me:3000";
 			function isExistUername(){
 				username=$("#doc-vld-name-2-1")[0].value;
 				console.log("username::"+username);
 				$.ajax({
 					type:"get",
-					url:(URL+"is_name_exist"),
+					url:(URL+"/user_mobile/is_name_exist"),
 					async:true,
 					data:{"user_attr":username},
 					success:function(data){
@@ -114,7 +115,7 @@
 				var invitation=$('#doc-vld-invitation')[0].value;
 				$.ajax({
 					type:"post",
-					url:URL+"create",
+					url:URL+"/user_mobile/create",
 					async:true,
 					data:{"user[name]":username,"user[password]":md5,"user[invite_code]":invitation,"user[password_confirmation]":confirmPsw},
 					dataType:'json',

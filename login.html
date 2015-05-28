@@ -67,12 +67,14 @@
 			function test(){
 				console.log('test');
 			}
+			URL = "http://laiber.wenjiangtao.me:3000";
+//			URL = "http://10.17.1.187:3000";
 			function login() {
 				var username = $("#username")[0].value;
 				var password = hex_md5($('#password')[0].value);
 				$.ajax({
 					type: "post",
-					url: "http://10.17.1.187:3000/mobile_new_session/create",
+					url: URL+"/mobile_app/sign/signIn",
 					async: true,
 					data: {
 						"user[name]": username,
@@ -92,7 +94,7 @@
 							//						});
 							//						var data_str = $.parseJSON(data);
 							//						console.log('data_str::'+data_str);
-							_id = JSON.stringify(data._id);
+							_id = JSON.stringify(data.token);
 							if (window.localStorage) {
 								window.localStorage.setItem(local_userid, _id);
 								alert("登录成功！");

@@ -51,12 +51,11 @@
 				</a>
 			</div>
 			<h1 class="am-header-title">
-
-		    <a href="#title-link" class="">发布帖子</a>
-
+		    <a href="#title-link" class="">评论</a>
 		  </h1>
 			<nav data-am-widget="menu" class="am-menu  am-menu-offcanvas1" data-am-menu-offcanvas>
 				<a href="javascript: void(0)" class="am-menu-toggle">
+					<i onclick="release()">完成</i>
 				</a>
 			</nav>
 		</header>
@@ -77,58 +76,58 @@
 		</article>	-->
 
 		<div>
-			<article class="my-article">
-				<h1 class="">标题:</h1>
-				<input name="title" id="title"></input>
-				<h1 class="">正文:</h1>
+			<article>
 				<div class="am-form-group">
-					<textarea class="" rows="5" id="content"></textarea>
+					<textarea style="width: 100%;" rows="10" id="content" placeholder="输入评论..."></textarea>
 					<div id="show"></div>
 					<div class="comment">
 						<div class="com_form">
 							<p><span class="emotion">表情</span>
-								<input type="button" class="sub_btn" value="提交">
 							</p>
 						</div>
 					</div>
 			</article>
 			</div>
 
-			<button class="am-btn-block mybtn" onclick="release()">提交</button>
 			<script type="text/javascript">
 				 //		URL="http://laiber.ml/mobile_app/";
-//				URL = "http://10.17.1.187:3000/mobile_app/";
+				 //				URL = "http://10.17.1.187:3000/mobile_app/";
 				URL = "http://laiber.wenjiangtao.me:3000";
+
+				function getURLParameter(name) {
+					return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(window.location.search) || [, ""])[1].replace(/\+/g, '%20')) || null;
+				}
+
 				function release() {
-					var title = $('#title')[0].value;
-					var content = $('#content')[0].value;
+					var content = $('#content').val();
 					var _id = window.localStorage.getItem('_id');
-					console.log('_id' + _id + ' title' + title + ' content' + content);
-					$.ajax({
-						type: "post",
-						url: URL + "/mobile_app/posts/new",
-						async: true,
-						data: {
-							"post[title]": title,
-							"post[content]": content,
-							"token": _id
-						},
-						dataType: "json",
-						success: function(data) {
-							if (data == "1") {
-								alert('发布成功！');
-								setTimeout(function() {
-									window.location = 'home.html';
-								}, 1000);
-							}
-							if (data == "0")
-								alert('发布失败!');
-						},
-						error: function(data) {
-							console.log('data::' + JSON.stringify(data));
-							alert('服务器开小差了，请稍后重试');
-						}
-					});
+					var post_parent = getURLParameter('id');
+					console.log('_id::' + _id + ' content::' + content + ' post_parent::' + post_parent);
+//					$.ajax({
+//						type: "post",
+//						url: URL + "/mobile_app/posts/new",
+//						async: true,
+//						data: {
+//							"post[post_parent]": post_parent,
+//							"post[content]": content,
+//							"user[_id]": _id
+//						},
+//						dataType: "json",
+//						success: function(data) {
+//							if (data == "1") {
+//								alert('发布成功！');
+//								setTimeout(function() {
+//									window.location = 'article_details.html';
+//								}, 1000);
+//							}
+//							if (data == "0")
+//								alert('发布失败!');
+//						},
+//						error: function(data) {
+//							console.log('data::' + JSON.stringify(data));
+//							alert('服务器开小差了，请稍后重试');
+//						}
+//					});
 				}
 			</script>
 	</body>
