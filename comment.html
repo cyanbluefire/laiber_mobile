@@ -86,31 +86,34 @@
 							</p>
 						</div>
 					</div>
+					</div>
+				</div>
 			</article>
-			</div>
+		</div>
 
 			<script type="text/javascript">
 				 //		URL="http://laiber.ml/mobile_app/";
-				 //				URL = "http://10.17.1.187:3000/mobile_app/";
+				 //		URL = "http://10.17.1.187:3000/mobile_app/";
 				URL = "http://laiber.wenjiangtao.me:3000";
 
 				function getURLParameter(name) {
 					return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(window.location.search) || [, ""])[1].replace(/\+/g, '%20')) || null;
 				}
-
+				var post_parent = getURLParameter('id');
+					console.log('post_parent::'+post_parent);
+					
 				function release() {
 					var content = $('#content').val();
 					var _id = window.localStorage.getItem('_id');
-					var post_parent = getURLParameter('id');
 					console.log('_id::' + _id + ' content::' + content + ' post_parent::' + post_parent);
 					$.ajax({
 						type: "post",
 						url: URL + "/mobile_app/posts/new",
 						async: true,
 						data: {
-							"post[post_parent]": post_parent,
+							"parent_post[id]": post_parent,
 							"post[content]": content,
-							"user[_id]": _id
+							"token": _id
 						},
 						dataType: "json",
 						success: function(data) {

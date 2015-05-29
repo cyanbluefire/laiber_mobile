@@ -93,7 +93,7 @@
 		<script type="text/x-handlebars-template" id="tpi-list-item">
 			{{#each posts}}
 			<li class="am-list-item-desced" onclick="showDetails(this)">
-				<p id="id" style="display: none;">{{post._id.$oid}}</p>
+				<p id="id" style="display: none;">{{post.id}}</p>
 				<a href="#" class="am-list-item-hd" target="_blank" id="title">{{post.title}}</a>
 				<p id="name">{{user.name}}</p>
 				<div class="am-list-item-text" id="content">{{post.content}}</div>
@@ -284,21 +284,20 @@
 				//		console.log($(item).children("#content").html());
 				//		console.log($(item).children("#title").html());
 				//		console.log($(item).children("#name").html());
-				var id = JSON.stringify({
-					"$oid": ($(item).children('#id').html())
-				});
+				var id = $(item).children('#id').html();
+				
 				console.log(id);
-				var dataFormLi = $.param({
-					data: '',
-					title: $(item).children("#title").html(),
-					content: $(item).children("#content").html(),
-					name: $(item).children("#name").html(),
-					id: id
-				});
-				//		console.log($.param(dataFormLi));
-				//		var dataFormLi = [$(item).children("#title").html(),$(item).children("#name").html(),$(item).val(),$(item).children("#content").html()];
-				var d = JSON.stringify(dataFormLi);
-				window.location = "article_details.html?data=" + d;
+//				var dataFormLi = $.param({
+//					data: '',
+//					title: $(item).children("#title").html(),
+//					content: $(item).children("#content").html(),
+//					name: $(item).children("#name").html(),
+//					id: id
+//				});
+//				//		console.log($.param(dataFormLi));
+//				//		var dataFormLi = [$(item).children("#title").html(),$(item).children("#name").html(),$(item).val(),$(item).children("#content").html()];
+//				var d = JSON.stringify(dataFormLi);
+				window.location = "article_details.html?id=" + id;
 				//		alert($(this).css("color","red"));
 				//var dataFormLi = [$('#title')]
 			}
