@@ -17,7 +17,7 @@
 		<script src="js/ajax.js" type="text/javascript"></script>
 
 		<script type="text/javascript">
-		URL = "http://laiber.wenjiangtao.me:3000";
+		window.URL = "http://laiber.wenjiangtao.me:3000";
 		window.id = getURLParameter('id');
 		console.log("parent_post[id]::"+id);
 		
@@ -138,71 +138,88 @@
 	</script>
 	<script src="js/iscroll.js" type="text/javascript"></script>
 	<script type="text/javascript">
-	
+	//初始化绑定iScroll控件 
+	document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+	document.addEventListener('DOMContentLoaded', loaded, false);
 	URL = "http://laiber.wenjiangtao.me:3000";
-		$(function(){
-			$('#comment').click(function(){
-				console.log("window.id::"+window.id);
-				window.location = "comment.html?id="+window.id;
-			})
+	/*
+	 * 
+	 * 点击评论
+	 */
+	$(function(){
+		$('#comment').click(function(){
+			console.log("window.id::"+window.id);
+			window.location = "comment.html?id="+window.id;
 		})
+	})
 		
 		/*json数据显示*/
 		compiler = Handlebars.compile($('#tpi-list-item').html());
-		/*上拉刷新*/	  
-		function pullUpAction() {
-		   setTimeout(function () {  
-		    var el, li, i;
-		    el = document.getElementById('thelist');
-		    //==========================================
-		    $.ajax({
-		     type: "post",
-		     url: "LoadMore.ashx",
-		     data: { page: generatedCount },
-		     dataType: "json",
-		     success: function (data) {
-		      var json = data;
-		      $(json).each(function () {
-		       li = document.createElement('li');
-		       //  li.innerText = 'Generated row ' + (++generatedCount);
-		       li.innerHTML = '<img src="' + this.src + '"/>';
-		       el.insertBefore(li, el.childNodes[0]);
-		      })
-		     }
-		    });
-		    //============================================
-		    refreshComment(); // 数据加载完成后，调用界面更新方法 Remember to refresh when contents are loaded (ie: on ajax completion)
-		   }, 1000); // <-- Simulate network congestion, remove setTimeout from production!
-		  }		
 		
-		/**
-		  * 下拉刷新 （自定义实现此方法）
-		  * myScroll.refresh(); // 数据加载完成后，调用界面更新方法
-		  */
-		  function pullDownAction() {
-		   setTimeout(function () { 
-		    var el, li, i;
-		    el = document.getElementById('thelist');
-		    //==========================================
-		    $.ajax({
-		     type: "post",
-		     url: "LoadMore.ashx",
-		     data: { page: generatedCount },
-		     dataType: "json",
-		     success: function (data) {
-			var html= compiler(data);	
-		      var json = data;
-		      $(json).each(function () {
-		       li = document.createElement('li');
-		       // li.innerText = 'Generated row ' + (++generatedCount);
-		       li.innerHTML = html;
-		       el.insertBefore(li, el.childNodes[0]);
-		      })
-		     }
-		    });
-//		    myScroll.refresh(); //数据加载完成后，调用界面更新方法  Remember to refresh when contents are loaded (ie: on ajax completion)
-		   }, 1000);  // <-- Simulate network congestion, remove setTimeout from production!
-		  }
+		var fresh_count = 10;
+		function fresh(fresh_type, _id, pull_up) {
+		//    	console.log('fresh function()');
+		var DATA;
+		//pull_up值为true是下拉刷新，false是直接刷新
+		switch (fresh_type) {
+			case 'refresh':
+				if (!pull_up) {
+					//    				console.log('type==refresh');
+					DATA = {
+						"posts[num]": fresh_count
+					};
+				}
+				if (pull_up) {
+					console.log('pull up');
+					DATA = {
+						"posts[num]": fresh_count,
+						"posts_for_top[id]": _id
+					};
+				}
+				break;
+			case 'load':
+				DATA = {
+					"posts[num]": fresh_count,
+					"posts_for_bottom[id]": _id
+				};
+				break;
+			default:
+				break;
+		}
+		$.ajax({
+			type: "post",
+			url: URL + "/mobile_app/posts/get",
+			async: true,
+			data: DATA,
+			dataType: "json",
+			success: function(data) {
+				console.log(JSON.stringify(data));
+				var html = _this.compiler(data);
+				var list = $('#thelist');
+				if (fresh_type === 'refresh') {
+					list.children('li').first().before(html);
+					localStorage.setItem('top_comment[id]', JSON.stringify(data.posts[0].post.id));
+					if (!pull_up) {
+						localStorage.setItem('bottom_comment[_id]', getJsonLast(data));
+					}
+				} else if (fresh_type === 'load') {
+					list.append(html);
+					localStorage.setItem('bottom_comment[_id]', getJsonLast(data));
+				} else {
+					list.html(html);
+				}
+			},
+			error: function(data) {
+				//    		console.log("errorData:"+data);
+			},
+			complete: function() {
+				_this.resetLoading($el);
+				if (fresh_type !== 'load') {
+					_this.iScroll.scrollTo(0, topOffset, 800, $.AMUI.iScroll.utils.circular);
+				}
+			}
+		});
+	};
 		
 		/**
 	  * 初始化iScroll控件
@@ -245,22 +262,23 @@
 	     }
 	    },
 	    onScrollEnd: function () {
+		var _id;
 	     if (pullDownEl.className.match('flip')) {
 	      pullDownEl.className = 'loading';
 	      pullDownEl.querySelector('.pullDownLabel').innerHTML = '加载中...';
-	      pullDownAction(); // Execute custom function (ajax call?)
-	     } else if (pullUpEl.className.match('flip')) {
+		  _id = localStorage.getItem('top_comment[_id]');
+		  fresh('refresh', _id, true);
+     } else if (pullUpEl.className.match('flip')) {
 	      pullUpEl.className = 'loading';
 	      pullUpEl.querySelector('.pullUpLabel').innerHTML = '加载中...';
-	      pullUpAction(); // Execute custom function (ajax call?)
+		  _id=localStorage.getItem('bottom_comment[_id]');
+	      fresh('load', _id, false);// Execute custom function (ajax call?)
 	     }
 	    }
 	   });
 	   setTimeout(function () { document.getElementById('wrapper').style.left = '0'; }, 800);
 	  }
-	  //初始化绑定iScroll控件 
-	  document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
-	  document.addEventListener('DOMContentLoaded', loaded, false);
+
 		</script>
 	</body>
 

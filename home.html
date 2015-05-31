@@ -168,7 +168,7 @@
 								var html = _this.compiler(data);
 								if (fresh_type === 'refresh') {
 									$list.children('li').first().before(html);
-									localStorage.setItem('posts_for_top[_id]', JSON.stringify(data.posts[0].post._id));
+									localStorage.setItem('posts_for_top[_id]', JSON.stringify(data.posts[0].post.id));
 									if (!pull_up) {
 										localStorage.setItem('posts_for_bottom[_id]', getJsonLast(data));
 									}
@@ -199,7 +199,7 @@
 						console.log('getJsonLast');
 						var len = data.posts.length;
 						if (len > 0)
-							return JSON.stringify(data.posts[data.posts.length - 1].post._id);
+							return JSON.stringify(data.posts[data.posts.length - 1].post.id);
 						else {
 							console.log('没有更多了');
 						}
