@@ -55,7 +55,7 @@
 		  </h1>
 			<nav data-am-widget="menu" class="am-menu  am-menu-offcanvas1" data-am-menu-offcanvas>
 				<a href="javascript: void(0)" class="am-menu-toggle">
-					<i onclick="release()">完成</i>
+					<i ontouchstart="release()">完成</i>
 				</a>
 			</nav>
 		</header>
@@ -99,19 +99,19 @@
 				function getURLParameter(name) {
 					return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(window.location.search) || [, ""])[1].replace(/\+/g, '%20')) || null;
 				}
-				var post_parent = getURLParameter('id');
-					console.log('post_parent::'+post_parent);
+				var post_parent_id = getURLParameter('id');
+					console.log('post_parent::'+post_parent_id);
 					
 				function release() {
 					var content = $('#content').val();
 					var _id = window.localStorage.getItem('_id');
-					console.log('_id::' + _id + ' content::' + content + ' post_parent::' + post_parent);
+					console.log('_id::' + _id + ' content::' + content + ' post_parent::' + post_parent_id);
 					$.ajax({
 						type: "post",
 						url: URL + "/mobile_app/posts/new",
 						async: true,
 						data: {
-							"parent_post[id]": post_parent,
+							"parent_post[id]": post_parent_id,
 							"post[content]": content,
 							"token": _id
 						},
@@ -120,7 +120,7 @@
 							if (data == "1") {
 								alert('发布成功！');
 								setTimeout(function() {
-									window.location = 'article_details.html';
+									window.location = 'article_details.html?id='+post_parent_id;
 								}, 1000);
 							}
 							if (data == "0")

@@ -102,13 +102,13 @@
 		</script>
 		<script src="js/amazeui.min.js"></script>
 		<script type="text/javascript">
-			 //	$(function(){
-			 //		
-			 //		$('li').click(function(e){
-			 //			alert();
-			 //			$(this).css("color","red");
-			 //		});
-			 //	})
+//			 	$(function(){
+//			 		alert($('#events-list li').length);
+//			 		$('#events-list li').click(function(){
+//			 			alert();
+//			 			$(this).css("color","red");
+//			 		});
+//			 	})
 			var fresh_count = 5;
 			URL = "http://laiber.wenjiangtao.me:3000";
 			(function($) {
@@ -144,14 +144,14 @@
 									console.log('pull up');
 									DATA = {
 										"posts[num]": fresh_count,
-										"posts_for_top[_id]": _id
+										"posts_for_top[id]": _id
 									};
 								}
 								break;
 							case 'load':
 								DATA = {
 									"posts[num]": fresh_count,
-									"posts_for_bottom[_id]": _id
+									"posts_for_bottom[id]": _id
 								};
 								break;
 							default:
@@ -168,13 +168,15 @@
 								var html = _this.compiler(data);
 								if (fresh_type === 'refresh') {
 									$list.children('li').first().before(html);
-									localStorage.setItem('posts_for_top[_id]', JSON.stringify(data.posts[0].post.id));
+									localStorage.setItem('posts_for_top[id]', data.posts[0].post.id);
 									if (!pull_up) {
-										localStorage.setItem('posts_for_bottom[_id]', getJsonLast(data));
+										if(data.posts.length > 0 )
+										localStorage.setItem('posts_for_bottom[id]', data.posts[data.posts.length - 1].post.id);
 									}
 								} else if (fresh_type === 'load') {
 									$list.append(html);
-									localStorage.setItem('posts_for_bottom[_id]', getJsonLast(data));
+									if(data.posts.length > 0 )
+									localStorage.setItem('posts_for_bottom[id]', data.posts[data.posts.length - 1].post.id);										
 								} else {
 									$list.html(html);
 								}
@@ -195,15 +197,16 @@
 						});
 					};
 
-					function getJsonLast(data) {
-						console.log('getJsonLast');
-						var len = data.posts.length;
-						if (len > 0)
-							return JSON.stringify(data.posts[data.posts.length - 1].post.id);
-						else {
-							console.log('没有更多了');
-						}
-					}
+//					function getJsonLast(data) {
+//						console.log('getJsonLast');
+//						var len = data.posts.length;
+//						if (len > 0)
+//							return data.posts[data.posts.length - 1].post.id;
+//						else {
+//							console.log('没有更多了');
+//							return null;
+//						}
+//					}
 					this.setLoading = function($el) {
 						$el.addClass('loading');
 					};
@@ -227,6 +230,7 @@
 							// console.log(this);
 						});
 						myScroll.on('scrollEnd', function() {
+//							console.log('this.directionY::'+this.directionY);
 							if (pullFormTop && this.directionY === -1) {
 								_this.handlePullDown();
 							}
@@ -240,13 +244,13 @@
 					this.handlePullDown = function() {
 						console.log('handle pull down');
 						this.setLoading($pullDown);
-						var _id = localStorage.getItem('posts_for_top[_id]');
+						var _id = localStorage.getItem('posts_for_top[id]');
 						this.fresh('refresh', _id, false);
 					};
 					this.handlePullUp = function() {
 						console.log('handle pull up');
 						this.setLoading($pullUp);
-						var _id = localStorage.getItem('posts_for_bottom[_id]')
+						var _id = localStorage.getItem('posts_for_bottom[id]')
 						this.fresh('load', _id, true);
 					}
 				};
