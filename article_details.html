@@ -24,24 +24,24 @@
 	</head>
 
 	<body>
-		<header data-am-widget="header" class="am-header am-header-default">
+<header data-am-widget="header" class="am-header am-header-default">
 
-			<div class="am-header-left am-header-nav">
-				<i class="am-icon-angle-left" onclick="history.back()"></i>
-				<a href="#left-link" class="">
-					<i></i>
-				</a>
-			</div>
-			<h1 class="am-header-title">
+				<div class="am-header-left am-header-nav">
+					<i class="am-icon-angle-left" onclick="history.back()"></i>
 
-		    <a href="#title-link" class="">帖子</a>
-
+					<a href="#left-link" class="">
+						<i></i>
+					</a>
+				</div>
+				<h1 class="am-header-title">
+				<a href="#title-link" class="">帖子</a>
 		  </h1>
-			<nav data-am-widget="menu" class="am-menu  am-menu-offcanvas1" data-am-menu-offcanvas>
-				<a href="javascript: void(0)" class="am-menu-toggle">
-				</a>
-			</nav>
-		</header>
+				<nav data-am-widget="menu" class="am-menu  am-menu-offcanvas1" data-am-menu-offcanvas>
+					<a href="javascript: void(0)" class="am-menu-toggle">
+						<i class="am-icon-star-o" onclick="favorite(this)" id="favorite"></i>
+					</a>
+				</nav>
+			</header>
 
 		
 
@@ -118,7 +118,7 @@
 			url:URL+"/mobile_app/posts/get",
 			async:true,
 			data:{
-					"posts[num]": 1,
+					"posts[num]": 10,
 					"parent_post[id]":id,
 					
 			},
@@ -128,6 +128,15 @@
 				$('#details_title').html(data.parent_post.post.title);
 				$('#details_content').html(data.parent_post.post.content);
 				$('#details_name').html(data.parent_post.user.name);
+				var el_class;
+				if(data.parent_post.isFavor == true){
+					console.log('true')
+					el_class = 'am-icon-star';
+				}else{
+					console.log('false')
+					el_class = 'am-icon-star-o';
+				}
+					$('#favorite').attr('class',el_class);
 				
 //				$('#details_id').html(getURLParameter('id'));	
 				var refresh_html = window.compiler(data);
@@ -137,7 +146,7 @@
 				localStorage.setItem('bottom_comment[id]', data.posts[data.posts.length - 1].post.id);
 			},
 			error:function(data){
-						alert("服务器开小差了，稍后重试哦~");				
+						console.log("服务器开小差了，稍后重试哦~");				
 			}
 		});
 		
@@ -308,7 +317,43 @@
 	   setTimeout(function () { document.getElementById('wrapper').style.left = '0'; }, 800);
 	  }
 	
+	/*
+	 * 收藏or取消收藏
+	 */
+	function favorite(el){
+		var setFavorite;
+		if($(el).attr('class') == 'am-icon-star-o'){
+			setFavorite = true;
+		}else{
+			setFavorite = false;
+		}
+//			$(el).attr('class','am-icon-star');
+			$.ajax({
+				type:"post",
+				url:window.URL+"/mobile_app/user/setPostFavor",
+				async:true,
+				dataType:'json',
+				data:{
+					"isFavor":setFavorite,"post[id]":window.id,"token":localStorage.getItem('token')
+				},
+				success:function(data){
+					if(setFavorite){
+						$(el).attr('class','am-icon-star');
+						alert('收藏成功！');
+					}else{
+						$(el).attr('class','am-icon-star-o');
+						alert('取消收藏！');
+					}
+
+				},
+				error:function(data){
+					console.log('error');
+				}
+			});
+	}
 		</script>
+		
+		
 	</body>
 
 </html>

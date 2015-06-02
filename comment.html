@@ -55,7 +55,7 @@
 		  </h1>
 			<nav data-am-widget="menu" class="am-menu  am-menu-offcanvas1" data-am-menu-offcanvas>
 				<a href="javascript: void(0)" class="am-menu-toggle">
-					<i ontouchstart="release()">完成</i>
+					<i onclick="release()">完成</i>
 				</a>
 			</nav>
 		</header>
@@ -103,6 +103,7 @@
 					console.log('post_parent::'+post_parent_id);
 					
 				function release() {
+					console.log('release');
 					var content = $('#content').val();
 					var _id = window.localStorage.getItem('_id');
 					console.log('_id::' + _id + ' content::' + content + ' post_parent::' + post_parent_id);
