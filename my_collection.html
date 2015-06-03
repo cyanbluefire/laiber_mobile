@@ -22,60 +22,18 @@
 			<header data-am-widget="header" class="am-header am-header-default">
 
 				<div class="am-header-left am-header-nav">
-					<a href="release_article.html"><i class="am-icon-edit"></i></a>
-
+					<i class="am-icon-angle-left" onclick="history.back()"></i>
 					<a href="#left-link" class="">
 						<i></i>
 					</a>
 				</div>
 				<h1 class="am-header-title">
-				<a href="#title-link" class="">主页</a>
+				<a href="#title-link" class="">我的收藏</a>
 		  </h1>
 				<nav data-am-widget="menu" class="am-menu  am-menu-offcanvas1" data-am-menu-offcanvas>
 					<a href="javascript: void(0)" class="am-menu-toggle">
-						<i class="am-menu-toggle-icon am-icon-bars"></i>
 					</a>
 
-					<div class="am-offcanvas">
-						<div class="am-offcanvas-bar">
-							<ul class="am-menu-nav am-avg-sm-1">
-								<li class="">
-									<ul class="sm-block-grid-3">
-										<li>
-											<img class="am-thumbnail" src="img/portrait2.png" alt="头像" />
-											<!--<img class="am-comment-avatar" src="img/portrait2.png" alt="头像" width="48" height="48"/>-->
-										</li>
-									</ul>
-
-									<!--<img src="img/portrait.jpg" alt="头像"/>-->
-								</li>
-								<li class="">
-									<a href="my_information.html" class="">我的资料</a>
-
-								</li>
-								<li class="">
-									<a href="my_project.html" class="">我的项目</a>
-
-								</li>
-
-								<li class="">
-									<a href="my_collection.html" class="">我的收藏</a>
-
-								</li>
-								<li class="">
-									<a href="message.html" class="">消息</a>
-
-								</li>
-								<li class="">
-									<a href="feedback.html" class="">反馈</a>
-
-								</li>
-								<li class="">
-									<a href="#" class="" onclick="logout()">退出账号</a>
-								</li>
-							</ul>
-						</div>
-					</div>
 				</nav>
 			</header>
 
@@ -110,7 +68,7 @@
 				<p id="id" style="display: none;">{{post.id}}</p>
 				<a href="#" class="am-list-item-hd" target="_blank" id="title">{{post.title}}</a>
 				<p id="name">{{user.name}}</p>
-				<div class="am-list-item-text" id="content">{{post.content}}</div>
+				<div class="am-list-item-text" id="content">{{post.created_at}}</div>
 			</li>
 			{{/each}}
 		</script>
@@ -118,6 +76,7 @@
 		<script type="text/javascript">
 
 			var fresh_count = 5;
+			var token = localStorage.getItem('token');
 			URL = "http://laiber.wenjiangtao.me:3000";
 			(function($) {
 				var EventsList = function(element, options) {
@@ -144,21 +103,19 @@
 								if (!pull_up) {
 									//    				console.log('type==refresh');
 									DATA = {
-										"posts[num]": fresh_count
+										"token":token
 									};
 								}
 								if (pull_up) {
 									console.log('pull up');
 									DATA = {
-										"posts[num]": fresh_count,
-										"posts_for_top[id]": _id
+										"token":token
 									};
 								}
 								break;
 							case 'load':
 								DATA = {
-									"posts[num]": fresh_count,
-									"posts_for_bottom[id]": _id
+									"token":token
 								};
 								break;
 							default:
@@ -166,7 +123,7 @@
 						}
 						$.ajax({
 							type: "post",
-							url: URL + "/mobile_app/posts/get",
+							url: URL + "/mobile_app/user/getFavorPosts",
 							async: true,
 							data: DATA,
 							dataType: "json",
@@ -265,9 +222,9 @@
 				$(function() {
 					//  	console.log('start');
 					var app = new EventsList(null, {
-						URL: URL + '/mobile_app/posts/get',
+						URL: URL + '/mobile_app/user/getFavorPosts',
 						params: {
-							start: 100
+							start: 10
 						}
 					});
 					app.init();
@@ -283,7 +240,7 @@
 				if (confirm_logout) {
 					console.log('logout true');
 					window.location = "login.html";
-					window.localStorage.removeItem('_id');
+					window.localStorage.removeItem('token');
 				} else {
 					console.log('logout false');
 				}

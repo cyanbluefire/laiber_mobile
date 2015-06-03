@@ -105,7 +105,7 @@
 				function release() {
 					console.log('release');
 					var content = $('#content').val();
-					var _id = window.localStorage.getItem('_id');
+					var _id = window.localStorage.getItem('token');
 					console.log('_id::' + _id + ' content::' + content + ' post_parent::' + post_parent_id);
 					$.ajax({
 						type: "post",
